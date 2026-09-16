@@ -1,0 +1,32 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.app header h1 {
+  margin: 0 0 8px;
+  color: #1d4ed8;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.app header p {
+  margin: 0;
+  color: #444;
+  max-width: 40rem;
+}
+
+.app section {
+  margin-top: 32px;
+}
+
+.app section h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
+
+.app section p {
+  margin: 0;
+  color: #555;
+}
