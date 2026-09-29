@@ -4,29 +4,69 @@
   padding: 32px 20px;
 }
 
-.app header h1 {
-  margin: 0 0 8px;
+.app-title {
+  margin: 0 0 12px;
   color: #1d4ed8;
-  font-size: 2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
   line-height: 1.2;
 }
 
-.app header p {
-  margin: 0;
+.app header {
+  margin-bottom: 24px;
+}
+
+.app section h1 {
+  margin: 0 0 12px;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.app section p {
+  margin: 0 0 8px;
   color: #444;
   max-width: 40rem;
 }
 
-.app section {
-  margin-top: 32px;
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.app section h2 {
-  margin: 0 0 12px;
-  font-size: 1.25rem;
+nav a {
+  color: #1d4ed8;
 }
 
-.app section p {
-  margin: 0;
-  color: #555;
+nav a:focus-visible,
+.task-card a:focus-visible,
+section a:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+nav a.active {
+  font-weight: bold;
+}
+
+.task-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.task-card {
+  border: 1px solid #ccc;
+  padding: 16px;
+  overflow-wrap: anywhere;
+}
+
+.task-card h2 {
+  margin-top: 0;
+}
+
+@media (min-width: 760px) {
+  .task-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
