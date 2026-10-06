@@ -4,7 +4,7 @@ import type { Task } from '../types/task'
 type TaskCardProps = { task: Task }
 
 const statusLabel: Record<Task['status'], string> = {
-  todo: 'К выполнению',
+  todo: 'Запланировано',
   in_progress: 'В работе',
   done: 'Готово',
 }

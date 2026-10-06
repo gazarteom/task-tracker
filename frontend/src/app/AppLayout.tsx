@@ -13,6 +13,10 @@ export function AppLayout() {
         </nav>
       </header>
       <main>
+        <p className="storage-note">
+          Изменения хранятся только в памяти открытой вкладки. После обновления
+          страницы вернутся демонстрационные задачи.
+        </p>
         <Outlet />
       </main>
     </div>
