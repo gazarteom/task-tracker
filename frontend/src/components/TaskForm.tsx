@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import type { TaskDraft } from '../types/task'
+import { useTags } from '../hooks/useTags'
 
 type TaskFormProps = {
   initialValues: TaskDraft
@@ -11,9 +12,17 @@ type TaskFormProps = {
 export function TaskForm(props: TaskFormProps) {
   const [draft, setDraft] = useState(() => ({ ...props.initialValues }))
   const [error, setError] = useState('')
+  const { load, retry } = useTags()
+  const tags = load.status === 'success' ? load.data : []
+  const selectedTagExists = tags.some((tag) => tag.id === draft.tag)
+  const canSave = load.status === 'success' && selectedTagExists
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (!canSave) {
+      setError('Дождитесь справочника и выберите доступный тег.')
+      return
+    }
     const title = draft.title.trim()
     const description = draft.description.trim()
     if (title.length < 3 || title.length > 100) {
@@ -29,7 +38,7 @@ export function TaskForm(props: TaskFormProps) {
       return
     }
     setError('')
-    props.onSave({ ...draft, title, description, tag: draft.tag.trim() })
+    props.onSave({ ...draft, title, description, tag: draft.tag })
   }
 
   return (
@@ -93,15 +102,54 @@ export function TaskForm(props: TaskFormProps) {
       </select>
 
       <label htmlFor="task-tag">Тег</label>
-      <input
+      <select
         id="task-tag"
         value={draft.tag}
+        required
+        disabled={load.status !== 'success' || tags.length === 0}
         onChange={(event) => setDraft({ ...draft, tag: event.target.value })}
-      />
+      >
+        <option value="">Выберите тег</option>
+        {draft.tag !== '' && !selectedTagExists && (
+          <option value={draft.tag} disabled>
+            Текущий код: {draft.tag} — выберите доступный тег
+          </option>
+        )}
+        {tags.map((tag) => (
+          <option key={tag.id} value={tag.id}>
+            {tag.name}
+          </option>
+        ))}
+      </select>
+      {load.status === 'loading' && <p role="status">Загружаем теги…</p>}
+      {load.status === 'error' && (
+        <div>
+          <p role="alert">{load.message}</p>
+          <button type="button" onClick={retry}>
+            Повторить
+          </button>
+        </div>
+      )}
+      {load.status === 'success' && tags.length === 0 && (
+        <div>
+          <p role="status">Тегов пока нет. Сохранение недоступно.</p>
+          <button type="button" onClick={retry}>
+            Повторить
+          </button>
+        </div>
+      )}
+      {load.status === 'success' &&
+        tags.length > 0 &&
+        draft.tag !== '' &&
+        !selectedTagExists && (
+          <p role="status">Выберите доступный тег из списка.</p>
+        )}
 
       {error && <p role="alert">{error}</p>}
       <div className="form-actions">
-        <button type="submit">Сохранить</button>
+        <button type="submit" disabled={!canSave}>
+          Сохранить
+        </button>
         <button type="button" onClick={props.onCancel}>
           Отмена
         </button>
