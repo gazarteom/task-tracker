@@ -1,7 +1,0 @@
-[
-  { "id": "study", "name": "Учёба" },
-  { "id": "work", "name": "Работа" },
-  { "id": "home", "name": "Дом" },
-  { "id": "health", "name": "Здоровье" },
-  { "id": "personal", "name": "Личное" }
-]

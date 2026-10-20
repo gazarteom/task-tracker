@@ -1,4 +1,5 @@
 import type { Tag } from '../types/tag'
+import { supabase } from '../lib/supabase'
 
 function isTag(value: unknown): value is Tag {
   if (typeof value !== 'object' || value === null) return false
@@ -25,16 +26,18 @@ export function parseTags(value: unknown): Tag[] {
   return tags
 }
 
-const tagsUrl = `${import.meta.env.BASE_URL}demo/tags.json`
-
 export async function getTags(signal: AbortSignal): Promise<Tag[]> {
-  const response = await fetch(tagsUrl, {
-    signal,
-    cache: 'no-store',
-  })
-  if (!response.ok) {
-    throw new Error(`Не удалось загрузить теги: HTTP ${response.status}`)
+  const { data, error } = await supabase
+    .from('tags')
+    .select('id, name')
+    .order('name')
+    .abortSignal(signal)
+
+  if (signal.aborted) {
+    throw new DOMException('Запрос отменён', 'AbortError')
   }
-  const value: unknown = await response.json()
-  return parseTags(value)
+  if (error) {
+    throw new Error(`Не удалось загрузить теги: ${error.message}`)
+  }
+  return parseTags(data)
 }

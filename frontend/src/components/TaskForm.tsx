@@ -144,6 +144,11 @@ export function TaskForm(props: TaskFormProps) {
         !selectedTagExists && (
           <p role="status">Выберите доступный тег из списка.</p>
         )}
+      {load.status === 'success' && (
+        <button type="button" onClick={retry}>
+          Обновить справочник
+        </button>
+      )}
 
       {error && <p role="alert">{error}</p>}
       <div className="form-actions">
