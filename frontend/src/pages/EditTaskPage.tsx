@@ -4,7 +4,7 @@ import type { Task, TaskDraft } from '../types/task'
 
 type EditTaskPageProps = {
   tasks: Task[]
-  onUpdate: (id: string, draft: TaskDraft) => void
+  onUpdate: (id: string, draft: TaskDraft) => Promise<void>
 }
 
 export function EditTaskPage({ tasks, onUpdate }: EditTaskPageProps) {
@@ -36,8 +36,8 @@ export function EditTaskPage({ tasks, onUpdate }: EditTaskPageProps) {
       <TaskForm
         key={task.id}
         initialValues={initialValues}
-        onSave={(draft) => {
-          onUpdate(task.id, draft)
+        onSave={async (draft) => {
+          await onUpdate(task.id, draft)
           navigate(`/tasks/${task.id}`)
         }}
         onCancel={() => navigate(`/tasks/${task.id}`)}

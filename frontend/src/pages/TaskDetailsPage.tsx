@@ -1,9 +1,10 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import type { Task } from '../types/task'
 
 type TaskDetailsPageProps = {
   tasks: Task[]
-  onDelete: (id: string) => void
+  onDelete: (id: string) => Promise<void>
 }
 
 const statusLabel = {
@@ -21,6 +22,8 @@ const priorityLabel = {
 export function TaskDetailsPage({ tasks, onDelete }: TaskDetailsPageProps) {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
   const task = tasks.find((item) => item.id === id)
 
   if (!task) {
@@ -31,6 +34,24 @@ export function TaskDetailsPage({ tasks, onDelete }: TaskDetailsPageProps) {
         <Link to="/tasks">К списку задач</Link>
       </section>
     )
+  }
+
+  async function handleDelete() {
+    if (!task) return
+    if (!window.confirm(`Удалить задачу «${task.title}»?`)) return
+    setPending(true)
+    setError('')
+    try {
+      await onDelete(task.id)
+      navigate('/tasks', { replace: true })
+    } catch (caught: unknown) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'Не удалось удалить задачу.',
+      )
+      setPending(false)
+    }
   }
 
   return (
@@ -45,16 +66,9 @@ export function TaskDetailsPage({ tasks, onDelete }: TaskDetailsPageProps) {
         <Link to={`/tasks/${task.id}/edit`}>Редактировать</Link>
         <Link to="/tasks">К списку задач</Link>
       </p>
-      <button
-        type="button"
-        onClick={() => {
-          if (window.confirm(`Удалить задачу «${task.title}»?`)) {
-            onDelete(task.id)
-            navigate('/tasks', { replace: true })
-          }
-        }}
-      >
-        Удалить
+      {error && <p role="alert">{error}</p>}
+      <button type="button" onClick={() => void handleDelete()} disabled={pending}>
+        {pending ? 'Удаляем…' : 'Удалить'}
       </button>
     </section>
   )

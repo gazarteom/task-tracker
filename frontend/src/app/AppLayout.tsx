@@ -1,6 +1,11 @@
 import { NavLink, Outlet } from 'react-router'
 
-export function AppLayout() {
+type AppLayoutProps = {
+  email?: string | null
+  onSignOut: () => Promise<void>
+}
+
+export function AppLayout({ email, onSignOut }: AppLayoutProps) {
   return (
     <div className="app">
       <header>
@@ -11,12 +16,14 @@ export function AppLayout() {
           </NavLink>
           <NavLink to="/tasks/new">Создать</NavLink>
         </nav>
+        <p className="account-row">
+          <span>{email || 'Аккаунт'}</span>
+          <button type="button" onClick={() => void onSignOut()}>
+            Выйти
+          </button>
+        </p>
       </header>
       <main>
-        <p className="storage-note">
-          Изменения хранятся только в памяти открытой вкладки. После обновления
-          страницы вернутся демонстрационные задачи.
-        </p>
         <Outlet />
       </main>
     </div>

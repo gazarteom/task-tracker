@@ -3,7 +3,7 @@ import { TaskForm } from '../components/TaskForm'
 import type { TaskDraft } from '../types/task'
 
 type NewTaskPageProps = {
-  onCreate: (draft: TaskDraft) => string
+  onCreate: (draft: TaskDraft) => Promise<string>
 }
 
 const emptyTask: TaskDraft = {
@@ -18,8 +18,8 @@ const emptyTask: TaskDraft = {
 export function NewTaskPage({ onCreate }: NewTaskPageProps) {
   const navigate = useNavigate()
 
-  function handleSave(draft: TaskDraft) {
-    const id = onCreate(draft)
+  async function handleSave(draft: TaskDraft) {
+    const id = await onCreate(draft)
     navigate(`/tasks/${id}`)
   }
 

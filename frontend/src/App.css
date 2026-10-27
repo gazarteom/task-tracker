@@ -38,6 +38,13 @@ nav a {
   color: #1d4ed8;
 }
 
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 nav a:focus-visible,
 .task-card a:focus-visible,
 section a:focus-visible {

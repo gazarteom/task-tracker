@@ -5,20 +5,22 @@ import { useTags } from '../hooks/useTags'
 
 type TaskFormProps = {
   initialValues: TaskDraft
-  onSave: (draft: TaskDraft) => void
+  onSave: (draft: TaskDraft) => Promise<void>
   onCancel: () => void
 }
 
 export function TaskForm(props: TaskFormProps) {
   const [draft, setDraft] = useState(() => ({ ...props.initialValues }))
   const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
   const { load, retry } = useTags()
   const tags = load.status === 'success' ? load.data : []
   const selectedTagExists = tags.some((tag) => tag.id === draft.tag)
   const canSave = load.status === 'success' && selectedTagExists
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (pending) return
     if (!canSave) {
       setError('Дождитесь справочника и выберите доступный тег.')
       return
@@ -38,7 +40,18 @@ export function TaskForm(props: TaskFormProps) {
       return
     }
     setError('')
-    props.onSave({ ...draft, title, description, tag: draft.tag })
+    setPending(true)
+    try {
+      await props.onSave({ ...draft, title, description, tag: draft.tag })
+    } catch (caught: unknown) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'Не удалось сохранить запись.',
+      )
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
@@ -152,8 +165,8 @@ export function TaskForm(props: TaskFormProps) {
 
       {error && <p role="alert">{error}</p>}
       <div className="form-actions">
-        <button type="submit" disabled={!canSave}>
-          Сохранить
+        <button type="submit" disabled={!canSave || pending}>
+          {pending ? 'Сохраняем…' : 'Сохранить'}
         </button>
         <button type="button" onClick={props.onCancel}>
           Отмена
